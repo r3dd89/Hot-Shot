@@ -4,40 +4,40 @@ using UnityEngine;
 
 public class PlayerVision : MonoBehaviour
 {
-    // Sensitivity of the mouse movement
-    [SerializeField] float mouseSensitivity;
 
-    // Reference to the player's body
-    [SerializeField] Transform playerBod;
+    [SerializeField] int sens;
+    [SerializeField] int lockVertMin, lockVertMax;
+    [SerializeField] bool invertY;
 
-    // Vertical rotation 
-    float xRotation;
-
+    float rotX;
 
     // Start is called before the first frame update
     void Start()
     {
+        Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
     void Update()
     {
-        HandleMouseLook();
-    }
+        // get input
+        float mouseY = Input.GetAxis("Mouse Y") * sens * Time.deltaTime;
+        float mouseX = Input.GetAxis("Mouse X") * sens * Time.deltaTime;
 
-    void HandleMouseLook()
-    {
-        // Gets mouse input
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+        if (invertY)
+            rotX += mouseY;
+        else
+            rotX -= mouseY;
 
-        // Calculates vertical rotation and clamping it to prevent the user from over rotating
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90, 90);
+        // clamp the rotX on the x axis
+        rotX = Mathf.Clamp(rotX, lockVertMin, lockVertMax);
 
-        // Apply rotation to the camera and player body
-        transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
-        playerBod.Rotate(Vector3.up * mouseX);
+        // rotate the camera on the x axis
+        transform.localRotation = Quaternion.Euler(rotX, 0, 0);
+
+        // rotate the player on the y axis
+        transform.parent.Rotate(Vector3.up * mouseX);
+
     }
 }
