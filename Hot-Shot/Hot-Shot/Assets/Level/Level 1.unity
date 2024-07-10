@@ -7535,7 +7535,7 @@ Transform:
   m_GameObject: {fileID: 705507993}
   serializedVersion: 2
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalPosition: {x: 0, y: 6.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8439,9 +8439,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41ada81646109a34d943c43e673508d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterController: {fileID: 770862088}
+  ignoreMask:
+    serializedVersion: 2
+    m_Bits: 0
   speed: 7
   jumpSpeed: 8
+  sprintMod: 3
+  jumpsMax: 2
   gravity: 15
+  shootDamage: 0
+  shootRate: 0
+  shootDistance: 0
+  HP: 0
+  cube: {fileID: 0}
 --- !u!1001 &791254376
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11157,8 +11168,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32e6163155b496d40977f51784ccb720, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseSensitivity: 100
-  playerBod: {fileID: 770862087}
+  sens: 100
+  lockVertMin: 0
+  lockVertMax: 0
+  invertY: 0
 --- !u!1 &994631854
 GameObject:
   m_ObjectHideFlags: 0
