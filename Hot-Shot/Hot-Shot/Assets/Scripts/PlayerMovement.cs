@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour, IDamage
+public class PlayerMovement : MonoBehaviour //, IDamage
 {
 
     // This references the CharacterController component
@@ -201,12 +201,12 @@ public class PlayerMovement : MonoBehaviour, IDamage
         canWallJump = true;
     }
 
-    public void takeDamage(int amount)
-    {
-        HP -= amount;
-        if (HP <= 0)
-        {
-            gameManager.instance.youLose();
-        }
-    }
+    //public void takeDamage(int amount)
+    //{
+    //    HP -= amount;
+    //    if (HP <= 0)
+    //    {
+    //        gameManager.instance.youLose();
+    //    }
+    //}
 }
