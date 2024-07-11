@@ -201,12 +201,12 @@ public class PlayerMovement : MonoBehaviour //, IDamage
         canWallJump = true;
     }
 
-    //public void takeDamage(int amount)
-    //{
-    //    HP -= amount;
-    //    if (HP <= 0)
-    //    {
-    //        gameManager.instance.youLose();
-    //    }
-    //}
+    public void takeDamage(int amount)
+    {
+        HP -= amount;
+        if (HP <= 0)
+        {
+            gameManager.instance.LoseGame();
+        }
+    }
 }
