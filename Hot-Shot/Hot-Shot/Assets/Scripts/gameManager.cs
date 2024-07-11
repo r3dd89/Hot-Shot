@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class gameManager : MonoBehaviour
 {
@@ -62,24 +63,24 @@ public class gameManager : MonoBehaviour
         menuActive = null;
     }
 
-    public void updateGameGoal(int amount)
+    public void WinGame()
     {
-        enemyCount += amount;
-        if (enemyCount <= 0)
-        {
-            //you win :D
-            statePause();
-            menuActive = menuWin;
-            menuActive.SetActive(isPaused);
-        }
+        menuWin.SetActive(true);
 
+        // Pauses the game
+        //https://gamedevbeginner.com/the-right-way-to-pause-the-game-in-unity/
+        Time.timeScale = 0;
     }
 
-    public void youLose()
+    public void LoseGame()
     {
-        statePause();
-        menuActive = menuLose;
-        menuActive.SetActive(true);
-        //womp womp
+        menuLose.SetActive(true);
+        Time.timeScale = 0;
+    }
+
+    public void RestartGame()
+    {
+        Time.timeScale = 0;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
