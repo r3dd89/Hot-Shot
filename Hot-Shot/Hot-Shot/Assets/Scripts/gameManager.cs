@@ -63,6 +63,17 @@ public class gameManager : MonoBehaviour
         menuActive = null;
     }
 
+    public void updateGameGoal(int amount)
+    {
+        enemyCount += amount;
+        if (enemyCount <= 0)
+        {
+            statePause();
+            menuActive = menuWin;
+            menuActive.SetActive(isPaused);
+        }
+    }
+
     public void WinGame()
     {
         menuWin.SetActive(true);
