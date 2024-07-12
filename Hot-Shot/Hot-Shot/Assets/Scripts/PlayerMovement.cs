@@ -148,9 +148,12 @@ public class PlayerMovement : MonoBehaviour //, IDamage
 
         isShooting = true;
 
+        //Ignoring the player
+        int layerMask = ~ignoreMask & ~(1 << LayerMask.NameToLayer("Player"));
+
         // used to return info on what the raycast hits
         RaycastHit hit;
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDistance, ~ignoreMask))
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDistance, layerMask))
         {
             Debug.Log(hit.collider.name);
             IDamage dmg = hit.collider.GetComponent<IDamage>();
