@@ -17,6 +17,18 @@ public class buttonFunctions : MonoBehaviour
         gameManager.instance.stateUnpause();
     }
 
+    public void settings()
+    {
+        gameManager.instance.OpenSettingsMenu();
+    }
+    public void back()
+    {
+        gameManager.instance.back();
+    }
+    public void onToggleChange()
+    {
+        gameManager.instance.toggleInvertY();
+    }
 
     public void quit()
     {
@@ -26,5 +38,4 @@ public class buttonFunctions : MonoBehaviour
                 Application.Quit();
 #endif
     }
-
 }

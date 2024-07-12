@@ -7,7 +7,7 @@ public class PlayerVision : MonoBehaviour
 
     [SerializeField] int sens;
     [SerializeField] int lockVertMin, lockVertMax;
-    [SerializeField] bool invertY;
+    [SerializeField] public bool invertY;
 
     float rotX;
 
@@ -25,11 +25,16 @@ public class PlayerVision : MonoBehaviour
         float mouseY = Input.GetAxis("Mouse Y") * sens * Time.deltaTime;
         float mouseX = Input.GetAxis("Mouse X") * sens * Time.deltaTime;
 
-        if (invertY)
+        if (gameManager.instance.invertY)
+        {
+            invertY = gameManager.instance.invertY;
             rotX += mouseY;
+        }
         else
+        {
+            invertY = gameManager.instance.invertY;
             rotX -= mouseY;
-
+        }
         // clamp the rotX on the x axis
         rotX = Mathf.Clamp(rotX, lockVertMin, lockVertMax);
 

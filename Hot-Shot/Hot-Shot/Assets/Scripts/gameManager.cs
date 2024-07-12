@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,11 +12,16 @@ public class gameManager : MonoBehaviour
     [SerializeField] GameObject menuPause;
     [SerializeField] GameObject menuWin;
     [SerializeField] GameObject menuLose;
+    [SerializeField] GameObject menuSettings;
+    [SerializeField] private TMP_Dropdown dropdown;
 
     public GameObject player;
     public PlayerMovement playerScript;
+    public PlayerVision playerVisionScript;
+    public GameObject prevMenu;
 
     public bool isPaused;
+    public bool invertY;
 
     int enemyCount;
 
@@ -26,7 +32,11 @@ public class gameManager : MonoBehaviour
     {
         instance = this;
         player = GameObject.FindWithTag("Player");
-        playerScript = player.GetComponent<PlayerMovement>();
+        if (player != null)
+        {
+            playerScript = player.GetComponent<PlayerMovement>();
+            playerVisionScript = player.GetComponent<PlayerVision>();
+        }
     }
 
     // Update is called once per frame
@@ -46,10 +56,11 @@ public class gameManager : MonoBehaviour
     public void statePause()
     {
 
-        isPaused = !isPaused;
+        isPaused = true;
         Time.timeScale = 0;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.Confined;
+
     }
 
     public void stateUnpause()
@@ -59,8 +70,12 @@ public class gameManager : MonoBehaviour
         Time.timeScale = 1;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        menuActive.SetActive(isPaused);
-        menuActive = null;
+
+        if (menuActive != null)
+        {
+            menuActive.SetActive(false);
+            menuActive = null;
+        }
     }
 
     public void updateGameGoal(int amount)
@@ -93,5 +108,42 @@ public class gameManager : MonoBehaviour
     {
         Time.timeScale = 0;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    public void OpenSettingsMenu()
+    {
+        if(menuActive != null)
+    {
+            prevMenu = menuActive;
+            menuActive.SetActive(false);
+        }
+
+        menuSettings.SetActive(true);
+        menuActive = menuSettings;
+        statePause();
+    }
+    public void back()
+    {
+        Debug.Log("Back pressed");
+        if (menuActive != null)
+        {
+            Debug.Log("Hiding current active menu");
+            menuActive.SetActive(false);
+        }
+
+        if (prevMenu != null)
+        {
+            Debug.Log("showing previous menu");
+            prevMenu.SetActive(true);
+            menuActive = prevMenu;
+            prevMenu = null;
+        }
+
+        statePause();
+    }
+    public void toggleInvertY()
+    {
+        invertY = !invertY;
+        if (playerVisionScript != null) 
+            playerVisionScript.invertY = invertY;
     }
 }
