@@ -60,7 +60,7 @@ public class EnemyAI : MonoBehaviour, IDamage
                 }
                 if (!isShooting)
                 {
-                    StartCoroutine(Shoot());
+                    StartCoroutine(shoot());
                 }
                 return true;
             }
