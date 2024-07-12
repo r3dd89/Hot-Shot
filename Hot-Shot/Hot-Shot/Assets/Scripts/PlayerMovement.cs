@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour, IDamage
+public class PlayerMovement : MonoBehaviour //, IDamage
 {
 
     // This references the CharacterController component
@@ -206,7 +206,7 @@ public class PlayerMovement : MonoBehaviour, IDamage
         HP -= amount;
         if (HP <= 0)
         {
-            gameManager.instance.youLose();
+            gameManager.instance.LoseGame();
         }
     }
 }

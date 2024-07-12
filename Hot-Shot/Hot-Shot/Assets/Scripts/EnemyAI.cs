@@ -13,6 +13,7 @@ public class EnemyAI : MonoBehaviour, IDamage
 
     [SerializeField] int HP;
     [SerializeField] int faceTargetSpeed;
+    [SerializeField] int viewAngle;
 
     [SerializeField] GameObject bullet;
     [SerializeField] float shootRate;
@@ -21,6 +22,8 @@ public class EnemyAI : MonoBehaviour, IDamage
 
     bool isShooting;
     bool playerInRange;
+
+    float angToPlayer;
 
     Vector3 playerDir;
 
@@ -34,22 +37,41 @@ public class EnemyAI : MonoBehaviour, IDamage
     // Update is called once per frame
     void Update()
     {
-        if (playerInRange)
+        if (playerInRange && canSeePlayer())
         {
-            playerDir = gameManager.instance.player.transform.position - transform.position;
-            enemyAgent.SetDestination(gameManager.instance.player.transform.position);
 
-            if (enemyAgent.remainingDistance <= enemyAgent.stoppingDistance)
-                faceTarget();
-
-            if (!isShooting)
-                StartCoroutine(shoot());
         }
+    }
+
+    bool canSeePlayer()
+    {
+        playerDir = gameManager.instance.player.transform.position - transform.position;
+        angToPlayer = Vector3.Angle(playerDir, transform.forward);
+        Debug.DrawRay(transform.position, playerDir);
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, playerDir, out hit))
+        {
+            if (hit.collider.CompareTag("Player") && angToPlayer <= viewAngle)
+            {
+                enemyAgent.SetDestination(gameManager.instance.player.transform.position);
+                if (enemyAgent.remainingDistance <= enemyAgent.stoppingDistance)
+                {
+                    faceTarget();
+                }
+                if (!isShooting)
+                {
+                    StartCoroutine(shoot());
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     public void takeDamage(int amount)
     {
         HP -= amount;
+        enemyAgent.SetDestination(gameManager.instance.player.transform.position);
         StartCoroutine(flashDamage());
         if (HP <= 0)
         {
