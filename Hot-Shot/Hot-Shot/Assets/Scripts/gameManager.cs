@@ -20,7 +20,6 @@ public class gameManager : MonoBehaviour
     public PlayerMovement playerScript;
     public PlayerVision playerVisionScript;
     public GameObject prevMenu;
-    public Image playerHPBar; //Variable for player HP bar
     public GameObject damageFlashScreen; //Variable for damage flash
 
     public bool isPaused;
