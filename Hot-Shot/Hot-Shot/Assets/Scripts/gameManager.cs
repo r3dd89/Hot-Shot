@@ -36,11 +36,7 @@ public class gameManager : MonoBehaviour
     {
         instance = this;
         player = GameObject.FindWithTag("Player");
-        if (player != null)
-        {
-            playerScript = player.GetComponent<PlayerMovement>();
-            playerVisionScript = player.GetComponent<PlayerVision>();
-        }
+        playerScript = player.GetComponent<PlayerMovement>();
     }
 
     // Update is called once per frame
@@ -74,12 +70,8 @@ public class gameManager : MonoBehaviour
         Time.timeScale = 1;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-
-        if (menuActive != null)
-        {
-            menuActive.SetActive(false);
-            menuActive = null;
-        }
+        menuActive.SetActive(isPaused);
+        menuActive = null;
     }
 
     public void updateGameGoal(int amount)
@@ -104,8 +96,9 @@ public class gameManager : MonoBehaviour
 
     public void LoseGame()
     {
-        menuLose.SetActive(true);
-        Time.timeScale = 0;
+        statePause();
+        menuActive = menuLose;
+        menuActive.SetActive(isPaused);
     }
 
     public void RestartGame()

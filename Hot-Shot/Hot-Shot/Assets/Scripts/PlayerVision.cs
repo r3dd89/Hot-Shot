@@ -25,14 +25,12 @@ public class PlayerVision : MonoBehaviour
         float mouseY = Input.GetAxis("Mouse Y") * sens * Time.deltaTime;
         float mouseX = Input.GetAxis("Mouse X") * sens * Time.deltaTime;
 
-        if (gameManager.instance.invertY)
+        if (invertY)
         {
-            invertY = gameManager.instance.invertY;
             rotX += mouseY;
         }
         else
         {
-            invertY = gameManager.instance.invertY;
             rotX -= mouseY;
         }
         // clamp the rotX on the x axis
