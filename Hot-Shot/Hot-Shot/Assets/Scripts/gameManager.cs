@@ -66,12 +66,16 @@ public class gameManager : MonoBehaviour
     public void stateUnpause()
     {
 
-        isPaused = !isPaused;
+        isPaused = false;
         Time.timeScale = 1;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        menuActive.SetActive(isPaused);
-        menuActive = null;
+
+        if (menuActive != null)
+        {
+            menuActive.SetActive(false);
+            menuActive = null;
+        }
     }
 
     public void updateGameGoal(int amount)
