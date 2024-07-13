@@ -5,10 +5,10 @@ using UnityEngine;
 public class PlayerHealth : MonoBehaviour, IDamage
 {
     // Player's maximum health
-    [SerializeField] float maxHealth =100;
+    [SerializeField] public int maxHealth =100;
 
     // Player's current health
-    private float currentHealth;
+    public int currentHealth;
 
     // TODO: References the health bar in the UI
 
@@ -27,10 +27,21 @@ public class PlayerHealth : MonoBehaviour, IDamage
         
     }
 
+    // Event for health updates
+    public delegate void HealthUpdate(int currentHealth);
+    public event HealthUpdate OnHealthUpdate;
+
+    void Update()
+    {
+        OnHealthUpdate?.Invoke(currentHealth);
+    }
     public void takeDamage(int amount)
     {
         // Reduces the current health by the damage amount
         currentHealth -= amount;
+
+        // Trigger the health update event
+        OnHealthUpdate?.Invoke(currentHealth);
 
         // TODO: This will update the health slider's value
 

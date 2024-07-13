@@ -2159,6 +2159,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 535911773}
+  - component: {fileID: 535911776}
   - component: {fileID: 535911775}
   - component: {fileID: 535911774}
   - component: {fileID: 535911772}
@@ -2310,8 +2311,23 @@ MonoBehaviour:
   shootDamage: 1
   shootRate: 0.5
   shootDistance: 15
-  HP: 3
+  HP: 15
   cube: {fileID: 0}
+--- !u!114 &535911776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535911769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a13ba32af8a388c4cb6cc23b4df14133, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  currentHealth: 50
+  menuLose: {fileID: 2127178041}
 --- !u!1 &549452106
 GameObject:
   m_ObjectHideFlags: 0
@@ -3411,10 +3427,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6503792577191288975, guid: ffac8f0f4087a3a4cb3a5a12f0311559, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -455
-      objectReference: {fileID: 0}
+    - target: {fileID: 7030656957402382218, guid: ffac8f0f4087a3a4cb3a5a12f0311559, type: 3}
+      propertyPath: ammo
+      value: 
+      objectReference: {fileID: 1489644889}
+    - target: {fileID: 7030656957402382218, guid: ffac8f0f4087a3a4cb3a5a12f0311559, type: 3}
+      propertyPath: playerHealth
+      value: 
+      objectReference: {fileID: 535911776}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5958,6 +5978,17 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &1489644889 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4518697076210675892, guid: ffac8f0f4087a3a4cb3a5a12f0311559, type: 3}
+  m_PrefabInstance: {fileID: 770809228}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c238abd4009df1445b0a15f1ab3dfdcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1539335906
 GameObject:
   m_ObjectHideFlags: 0

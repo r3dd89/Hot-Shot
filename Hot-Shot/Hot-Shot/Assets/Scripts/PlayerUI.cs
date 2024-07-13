@@ -13,7 +13,8 @@ public class PlayerUI : MonoBehaviour
     public TMP_Text enemyText;
 
     // References to placeholder scripts that manage player status, score, and level information
-    public pPlayerStatus playerStatus;
+    public PlayerHealth playerHealth;
+    public pPlayerStatus ammo;
     public pPlayerScore playerScore;
     public pLevelManager levelManager;
 
@@ -21,14 +22,14 @@ public class PlayerUI : MonoBehaviour
     void Start()
     {
         // Initialize UI with values from other scripts
-        UpdateHP(playerStatus.playerHP);
-        UpdateAmmo(playerStatus.playerAmmo);
+        UpdateHP(playerHealth.currentHealth);
+        UpdateAmmo(ammo.playerAmmo);
         UpdateScore(playerScore.currentScore, playerScore.personalBest);
         UpdateLevel(levelManager.currentLevel);
         UpdateEnemies(levelManager.enemiesRemaining, levelManager.totalEnemies);
 
         // Subscribe to updates from other scripts
-        playerStatus.OnPlayerStatusUpdate += HandlePlayerStatusUpdate;
+        playerHealth.OnHealthUpdate += HandlePlayerHealthUpdate;
         playerScore.OnPlayerScoreUpdate += HandlePlayerScoreUpdate;
         levelManager.OnLevelUpdate += HandleLevelUpdate;
         levelManager.OnEnemyUpdate += HandleEnemyUpdate;
@@ -38,6 +39,7 @@ public class PlayerUI : MonoBehaviour
     void UpdateHP(int hp)
     {
         // Set the text of the hpText UI element to display the current HP
+
         hpText.text = "HP: " + hp.ToString();
     }
 
@@ -70,11 +72,10 @@ public class PlayerUI : MonoBehaviour
     }
 
     // Handler for player status updates (HP and ammo)
-    void HandlePlayerStatusUpdate(int hp, int ammo)
+    void HandlePlayerHealthUpdate(int hp)
     {
         // When the OnPlayerStatusUpdate event is triggered, update the HP and ammo UI elements
         UpdateHP(hp);
-        UpdateAmmo(ammo);
     }
 
     // Handler for player score updates
@@ -103,7 +104,7 @@ public class PlayerUI : MonoBehaviour
         // Unsubscribe from updates when the object is destroyed to prevent memory leaks
 
         // Unsubscribe the HandlePlayerStatusUpdate method from the OnPlayerStatusUpdate event
-        playerStatus.OnPlayerStatusUpdate -= HandlePlayerStatusUpdate;
+        playerHealth.OnHealthUpdate -= HandlePlayerHealthUpdate;
 
         // Unsubscribe the HandlePlayerScoreUpdate method from the OnPlayerScoreUpdate event
         playerScore.OnPlayerScoreUpdate -= HandlePlayerScoreUpdate;
