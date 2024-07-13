@@ -14,7 +14,6 @@ public class gameManager : MonoBehaviour
     [SerializeField] GameObject menuWin;
     [SerializeField] GameObject menuLose;
     [SerializeField] GameObject menuSettings;
-    [SerializeField] private TMP_Dropdown dropdown;
 
    
     public GameObject player;

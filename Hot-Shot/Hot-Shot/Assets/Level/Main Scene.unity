@@ -2795,11 +2795,12 @@ MonoBehaviour:
   menuWin: {fileID: 60481760}
   menuLose: {fileID: 2127178041}
   menuSettings: {fileID: 1588931913}
-  dropdown: {fileID: 0}
   player: {fileID: 0}
-  playerScript: {fileID: 0}
-  playerVisionScript: {fileID: 0}
+  playerScript: {fileID: 535911775}
+  playerVisionScript: {fileID: 1845229080}
   prevMenu: {fileID: 0}
+  playerHPBar: {fileID: 0}
+  damageFlashScreen: {fileID: 0}
   isPaused: 0
   invertY: 0
 --- !u!224 &625169092
