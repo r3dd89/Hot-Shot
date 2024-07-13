@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI; //Add using UnityEngine.UI
 
 public class gameManager : MonoBehaviour
 {
@@ -15,10 +16,13 @@ public class gameManager : MonoBehaviour
     [SerializeField] GameObject menuSettings;
     [SerializeField] private TMP_Dropdown dropdown;
 
+   
     public GameObject player;
     public PlayerMovement playerScript;
     public PlayerVision playerVisionScript;
     public GameObject prevMenu;
+    public Image playerHPBar; //Variable for player HP bar
+    public GameObject damageFlashScreen; //Variable for damage flash
 
     public bool isPaused;
     public bool invertY;
