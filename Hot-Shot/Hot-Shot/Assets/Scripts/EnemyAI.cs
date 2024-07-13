@@ -53,7 +53,7 @@ public class EnemyAI : MonoBehaviour, IDamage
         {
             if (hit.collider.CompareTag("Player") && angToPlayer <= viewAngle)
             {
-                SetAgentDestination(gameManager.instance.player.transform.position);
+                enemyAgent.SetDestination(gameManager.instance.player.transform.position);
                 if (enemyAgent.remainingDistance <= enemyAgent.stoppingDistance)
                 {
                     faceTarget();
@@ -68,18 +68,10 @@ public class EnemyAI : MonoBehaviour, IDamage
         return false;
     }
 
-    void SetAgentDestination(Vector3 destination)
-    {
-        if (enemyAgent.isOnNavMesh)
-        {
-            enemyAgent.SetDestination(destination);
-        }
-    }
-
     public void takeDamage(int amount)
     {
         HP -= amount;
-        SetAgentDestination(gameManager.instance.player.transform.position);
+        enemyAgent.SetDestination(gameManager.instance.player.transform.position);
         StartCoroutine(flashDamage());
         if (HP <= 0)
         {
