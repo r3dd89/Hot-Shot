@@ -5,124 +5,157 @@ using UnityEngine.AI;
 
 public class EnemyAI : MonoBehaviour, IDamage
 {
-    [SerializeField] NavMeshAgent enemyAgent; // Reference to the NavMeshAgent component
-    [SerializeField] Renderer model; // Reference to the Renderer component
-    [SerializeField] Color colorDamage; // Color to use when the enemy takes damage
-    [SerializeField] Transform ShootPos; // Position from which the enemy shoots
+    // Reference to the NavMeshAgent component
+    [SerializeField] NavMeshAgent enemyAgent;
 
-    [SerializeField] int HP; // Health points of the enemy
-    [SerializeField] int faceTargetSpeed; // Speed at which the enemy faces the target
-    [SerializeField] int viewAngle; // Viewing angle of the enemy
+    // Reference to Renderer component
+    [SerializeField] Renderer model;
 
-    [SerializeField] GameObject bullet; // Bullet prefab
-    [SerializeField] float shootRate; // Rate of shooting
+    // Color to flash when damaged
+    [SerializeField] Color colorDamage;
 
-    Color colorigin; // Original color of the enemy
+    // Position to instantiate bullets from
+    [SerializeField] Transform ShootPos;
 
-    bool isShooting; // Whether the enemy is currently shooting
-    bool playerInRange; // Whether the player is within range
+    // Enemy health 
+    [SerializeField] int HP;
 
-    float angToPlayer; // Angle to the player
+    // Speed the enemy turns to face the player
+    [SerializeField] int faceTargetSpeed;
 
-    Vector3 playerDir; // Direction to the player
+    // Field of view angle for detecting player
+    [SerializeField] int viewAngle;
+
+    // Bullet prefab
+    [SerializeField] GameObject bullet;
+
+    // How the fast the enemy shoots
+    [SerializeField] float shootRate;
+
+    // Enemies original color
+    Color colorigin;
+
+    // Is the enemy shooting
+    bool isShooting;
+
+    // Is the player within in range of the enemy
+    bool playerInRange;
+
+    // Angle to player
+    float angToPlayer;
+
+    // Direction vector to the player
+    Vector3 playerDir;
 
     // Start is called before the first frame update
     void Start()
     {
-        colorigin = model.material.color; // Save the original color of the enemy
-        gameManager.instance.updateGameGoal(1); // Notify the game manager that a new enemy has spawned
+        // Stores the original color of the enemy
+        colorigin = model.material.color;
+
+        // Update the game goal when the enemy spawns
+        gameManager.instance.updateGameGoal(1);
     }
 
     // Update is called once per frame
     void Update()
     {
-        // If the player is in range and the enemy can see the player, engage the player
         if (playerInRange && canSeePlayer())
         {
-            // Engage the player (e.g., shoot at the player)
+            // Sets the enemy's destination to the player's position
+            enemyAgent.SetDestination(gameManager.instance.player.transform.position);
+
+                faceTarget();
+            
+
+            // If the enemy is not shooting, start shooting
+            if (!isShooting)
+            {
+                StartCoroutine(shoot());
+            }
         }
     }
 
-    // Checks if the enemy can see the player
+    // Check if the enemy can see the player
     bool canSeePlayer()
     {
-        playerDir = gameManager.instance.player.transform.position - transform.position; // Direction to the player
-        angToPlayer = Vector3.Angle(playerDir, transform.forward); // Angle to the player
-        Debug.DrawRay(transform.position, playerDir); // Draw a debug ray to the player
+        playerDir = gameManager.instance.player.transform.position - transform.position;
+        angToPlayer = Vector3.Angle(playerDir, transform.forward);
 
         RaycastHit hit;
         if (Physics.Raycast(transform.position, playerDir, out hit))
         {
-            // If the raycast hits the player and the angle to the player is within the view angle
+            // If the raycast hits the player and the player is within view angle
             if (hit.collider.CompareTag("Player") && angToPlayer <= viewAngle)
             {
-                enemyAgent.SetDestination(gameManager.instance.player.transform.position); // Set the destination to the player's position
-
-                if (enemyAgent.remainingDistance <= enemyAgent.stoppingDistance)
-                {
-                    faceTarget(); // Face the target if within stopping distance
-                }
-
-                if (!isShooting)
-                {
-                    StartCoroutine(shoot()); // Start shooting if not already shooting
-                }
-
                 return true;
             }
         }
-
         return false;
     }
 
-    // Takes damage and updates the enemy's state
+    // Take damage method
     public void takeDamage(int amount)
     {
-        HP -= amount; // Reduce health points
-        enemyAgent.SetDestination(gameManager.instance.player.transform.position); // Set the destination to the player's position
-        StartCoroutine(flashDamage()); // Flash the damage color
+        // Reduces HP by the damage amount
+        HP -= amount;
+
+        // Flash Damage effect
+        StartCoroutine(flashDamage());
+
         if (HP <= 0)
         {
-            gameManager.instance.updateGameGoal(-1); // Notify the game manager that an enemy has died
-            Destroy(gameObject); // Destroy the enemy
+            // Update game goal on enemy
+            gameManager.instance.updateGameGoal(-1);
+
+            // Destroy enemy
+            Destroy(gameObject);
+        }
+        else
+        {
+            // Move towards the player's location when hit
+            enemyAgent.SetDestination(gameManager.instance.player.transform.position);
+            faceTarget();
         }
     }
 
-    // Called when another collider enters the trigger collider
+    // Trigger detection for player entering range
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
-            playerInRange = true; // Set the player in range flag to true
+            // Player is in range
+            playerInRange = true;
     }
 
-    // Called when another collider exits the trigger collider
+    // Trigger detection for player leaving range
     void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
-            playerInRange = false; // Set the player in range flag to false
+            // Player is out of range
+            playerInRange = false;
     }
 
-    // Faces the target (player)
+    // Enemy faces the player
     void faceTarget()
     {
-        Quaternion rot = Quaternion.LookRotation(playerDir); // Calculate the rotation to face the player
-        transform.rotation = Quaternion.Lerp(transform.rotation, rot, Time.deltaTime * faceTargetSpeed); // Rotate towards the player
+        Quaternion rot = Quaternion.LookRotation(playerDir);
+        transform.rotation = Quaternion.Lerp(transform.rotation, rot, Time.deltaTime * faceTargetSpeed);
     }
 
-    // Coroutine to flash the damage color
+    // Flash damage effect
     IEnumerator flashDamage()
     {
-        model.material.color = colorDamage; // Set the damage color
-        yield return new WaitForSeconds(0.1f); // Wait for a short duration
-        model.material.color = colorigin; // Reset to the original color
+        model.material.color = colorDamage;
+        yield return new WaitForSeconds(0.1f);
+        model.material.color = colorigin;
     }
 
-    // Coroutine to shoot bullets
+    // Handles shooting
     IEnumerator shoot()
     {
-        isShooting = true; // Set shooting flag to true
-        Instantiate(bullet, ShootPos.position, transform.rotation); // Instantiate the bullet
-        yield return new WaitForSeconds(shootRate); // Wait for the shoot rate duration
-        isShooting = false; // Set shooting flag to false
+        isShooting = true;
+        Instantiate(bullet, ShootPos.position, transform.rotation);
+        yield return new WaitForSeconds(shootRate);
+        isShooting = false;
     }
 }
