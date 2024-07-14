@@ -2133,7 +2133,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &497949030
 Transform:
@@ -2325,8 +2325,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a13ba32af8a388c4cb6cc23b4df14133, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  currentHealth: 50
+  maxHealth: 10
+  currentHealth: 5
   menuLose: {fileID: 2127178041}
 --- !u!1 &549452106
 GameObject:
@@ -2795,11 +2795,12 @@ MonoBehaviour:
   menuWin: {fileID: 60481760}
   menuLose: {fileID: 2127178041}
   menuSettings: {fileID: 1588931913}
-  dropdown: {fileID: 0}
   player: {fileID: 0}
-  playerScript: {fileID: 0}
-  playerVisionScript: {fileID: 0}
+  playerScript: {fileID: 535911775}
+  playerVisionScript: {fileID: 1845229080}
   prevMenu: {fileID: 0}
+  playerHPBar: {fileID: 0}
+  damageFlashScreen: {fileID: 0}
   isPaused: 0
   invertY: 0
 --- !u!224 &625169092
@@ -5838,12 +5839,13 @@ GameObject:
   - component: {fileID: 1456646338}
   - component: {fileID: 1456646337}
   - component: {fileID: 1456646336}
+  - component: {fileID: 1456646342}
   m_Layer: 0
   m_Name: 'Enemy '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!136 &1456646336
 CapsuleCollider:
@@ -5948,7 +5950,7 @@ Transform:
   m_GameObject: {fileID: 1456646335}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -3}
+  m_LocalPosition: {x: 0, y: 1, z: -25.055}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5978,6 +5980,27 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!135 &1456646342
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1456646335}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 20
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1489644889 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4518697076210675892, guid: ffac8f0f4087a3a4cb3a5a12f0311559, type: 3}
@@ -8060,7 +8083,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &1897004695
 Transform:
