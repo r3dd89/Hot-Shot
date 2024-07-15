@@ -21,6 +21,8 @@ public class gameManager : MonoBehaviour
     public GameObject prevMenu; // The previous menu before the current one
     public GameObject damageFlashScreen; // The screen that flashes when the player takes damage
 
+
+
     public bool isPaused; // Whether the game is currently paused
     public bool invertY; // Whether the Y-axis is inverted
 
@@ -36,6 +38,13 @@ public class gameManager : MonoBehaviour
         player = GameObject.FindWithTag("Player");
         playerScript = player.GetComponent<PlayerMovement>();
         playerVisionScript = player.GetComponent<PlayerVision>(); // Initialize playerVisionScript
+
+        // Assign the damage flash image to the player health script
+        PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
+        if (playerHealth != null)
+        {
+            playerHealth.damageFlashImage = damageFlashScreen;
+        }
     }
 
     // Update is called once per frame
@@ -58,6 +67,7 @@ public class gameManager : MonoBehaviour
             }
         }
     }
+
 
     // Pauses the game
     public void statePause()

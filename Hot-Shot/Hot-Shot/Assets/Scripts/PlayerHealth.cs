@@ -5,26 +5,33 @@ using UnityEngine;
 public class PlayerHealth : MonoBehaviour, IDamage
 {
     // Player's maximum health
-    [SerializeField] public int maxHealth =100;
+    [SerializeField] public int maxHealth = 100;
 
     // Player's current health
     public int currentHealth;
 
-    // TODO: References the health bar in the UI
-
-    // TODO: Reference the lose menu in the UI
+    // Reference to the lose menu in the UI
     [SerializeField] GameObject menuLose;
+
+    // Reference to the damage flash image
+    [SerializeField] public GameObject damageFlashImage;
+
+    // Duration of the damage flash effect
+    [SerializeField] float flashDuration = 0.2f;
+
+
 
     // Start is called before the first frame update
     void Start()
     {
-        // Starts the players current health to max health
+        // Initialize the player's current health to max health
         currentHealth = maxHealth;
 
-        // TODO: Set health slider's max value to max health
-
-        // TODO: Set the health slider value equal to the player's current health
-        
+        // Ensure the damage flash image is initially disabled
+        if (damageFlashImage != null)
+        {
+            damageFlashImage.SetActive(false);
+        }
     }
 
     // Event for health updates
@@ -35,27 +42,39 @@ public class PlayerHealth : MonoBehaviour, IDamage
     {
         OnHealthUpdate?.Invoke(currentHealth);
     }
+
     public void takeDamage(int amount)
     {
-        // Reduces the current health by the damage amount
+        // Reduce the current health by the damage amount
         currentHealth -= amount;
 
         // Trigger the health update event
         OnHealthUpdate?.Invoke(currentHealth);
 
-        // TODO: This will update the health slider's value
+        // Flash the damage effect
+        StartCoroutine(FlashDamageEffect());
 
         if (currentHealth <= 0)
         {
             Die();
         }
-    }  
-    
+    }
+
     void Die()
     {
-        // Shows lose menu
+        // Show the lose menu
         menuLose.SetActive(true);
     }
 
-    
+    IEnumerator FlashDamageEffect()
+    {
+        if (damageFlashImage != null)
+        {
+            damageFlashImage.SetActive(true);
+            yield return new WaitForSeconds(flashDuration);
+            damageFlashImage.SetActive(false);
+        }
+    }
 }
+
+

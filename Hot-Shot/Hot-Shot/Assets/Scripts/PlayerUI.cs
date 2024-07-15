@@ -71,11 +71,11 @@ public class PlayerUI : MonoBehaviour
         enemyText.text = currentEnemies.ToString() + " / " + totalEnemies.ToString();
     }
 
+
     // Handler for player status updates (HP and ammo)
-    void HandlePlayerHealthUpdate(int hp)
+    void HandlePlayerHealthUpdate(int currentHealth) //method to update the UI
     {
-        // When the OnPlayerStatusUpdate event is triggered, update the HP and ammo UI elements
-        UpdateHP(hp);
+        UpdateHP(currentHealth);
     }
 
     // Handler for player score updates
