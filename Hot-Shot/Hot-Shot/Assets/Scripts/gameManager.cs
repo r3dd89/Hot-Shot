@@ -37,7 +37,7 @@ public class gameManager : MonoBehaviour
         // Find the player GameObject and get its PlayerMovement script
         player = GameObject.FindWithTag("Player");
         playerScript = player.GetComponent<PlayerMovement>();
-        playerVisionScript = player.GetComponent<PlayerVision>(); // Initialize playerVisionScript
+        //playerVisionScript = player.GetComponent<PlayerVision>(); // Initialize playerVisionScript
 
         // Assign the damage flash image to the player health script
         PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
@@ -170,5 +170,11 @@ public class gameManager : MonoBehaviour
         invertY = !invertY; // Toggle the invertY variable
         if (playerVisionScript != null)
             playerVisionScript.invertY = invertY; // Update the PlayerVision script
+    }
+    public void UpdateSliderValue(float sens)
+    {
+        int sensitivity = Mathf.RoundToInt(sens);
+        if (playerVisionScript != null)
+            playerVisionScript.SetSensitivity(sensitivity);
     }
 }

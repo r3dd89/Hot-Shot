@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class buttonFunctions : MonoBehaviour
 {
+    public Slider mainSlider;
     // Resumes the game by unpausing it
     public void resume()
     {
@@ -37,6 +39,18 @@ public class buttonFunctions : MonoBehaviour
         gameManager.instance.toggleInvertY();
     }
 
+    public void OnSliderValueChanged()
+    {
+        if (mainSlider != null)
+        {
+            float sliderVal = mainSlider.value;
+            gameManager.instance.UpdateSliderValue(sliderVal);
+        }
+        else
+        {
+            Debug.LogWarning("mainSlider is not assigned.");
+        }
+    }
     // Quits the game or stops play mode in the Unity Editor
     public void quit()
     {

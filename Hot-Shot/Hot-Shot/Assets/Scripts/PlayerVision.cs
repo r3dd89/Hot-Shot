@@ -45,4 +45,8 @@ public class PlayerVision : MonoBehaviour
         transform.parent.Rotate(Vector3.up * mouseX);
 
     }
+    public void SetSensitivity(int newSensitivity)
+    {
+        sens = newSensitivity;
+    }
 }
