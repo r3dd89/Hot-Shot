@@ -6,129 +6,157 @@ using UnityEngine.AI;
 // Script for a melee style enemy
 public class MeleeEnemy : MonoBehaviour, IDamage
 {
-    // References the NavMeshAgent component for navigation
+    // Reference to the NavMeshAgent component
     [SerializeField] NavMeshAgent enemyAgent;
 
-    // References the Renderer component for visual effects
+    // Reference to Renderer component
     [SerializeField] Renderer model;
 
     // Color to flash when damaged
     [SerializeField] Color colorDamage;
 
-    // Health points of the enemy
+    // Enemy health 
     [SerializeField] int HP;
 
-    // The range the enemy will begin its assault
-    [SerializeField] float attackRange;
+    // Speed the enemy turns to face the player
+    [SerializeField] int faceTargetSpeed;
 
-    // The amount of damage the enemy will cause
+    // Field of view angle for detecting player
+    [SerializeField] int viewAngle;
+
+    // How the fast the enemy attacks
+    [SerializeField] float hitSpeed;
+
+    // How much damage the enemy deals
     [SerializeField] int damageAmount;
 
-    // Original color of the enemy
-    Color colorOrigin;
+    // Enemies original color
+    Color colorigin;
 
-    // Indicates if the player is within range
-    bool targetInRange;
+    // Is the enemy attacking
+    bool isAttacking;
 
-    // Direction vector towards the player
-    Vector3 targetDirection;
+    // Is the player within in range of the enemy
+    bool playerInRange;
 
+    // Angle to player
+    float angToPlayer;
+
+    // Direction vector to the player
+    Vector3 playerDir;
 
     // Start is called before the first frame update
     void Start()
     {
-        // Stores the original color of the model
-        colorOrigin = model.material.color;
+        // Stores the original color of the enemy
+        colorigin = model.material.color;
 
-        // Updates the game goal
+        // Update the game goal when the enemy spawns
         gameManager.instance.updateGameGoal(1);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (playerInRange && canSeePlayer())
+        {
+            // Sets the enemy's destination to the player's position
+            enemyAgent.SetDestination(gameManager.instance.player.transform.position);
+
+            faceTarget();
+
+
+            // If the enemy is not attacking, start attacking
+            if (!isAttacking)
+            {
+                StartCoroutine(Attack());
+            }
+        }
     }
 
+    // Check if the enemy can see the player
+    bool canSeePlayer()
+    {
+        playerDir = gameManager.instance.player.transform.position - transform.position;
+        angToPlayer = Vector3.Angle(playerDir, transform.forward);
+
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, playerDir, out hit))
+        {
+            // If the raycast hits the player and the player is within view angle
+            if (hit.collider.CompareTag("Player") && angToPlayer <= viewAngle)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Take damage method
     public void takeDamage(int amount)
     {
-        // Reduces HP by a certain amount
+        // Reduces HP by the damage amount
         HP -= amount;
 
-        // Flashes a visual to indicate damage
-        StartCoroutine(flashDamage());
-        
-    }
-
-
-    // Handles damage taken by the enemy
-    public void TakeDamage(int amount)
-    {
-        // Reduce HP by the specified amount
-        HP -= amount;
-
-        // Flash damage visual effect
+        // Flash Damage effect
         StartCoroutine(flashDamage());
 
-        // Checks to see if the enemy is defeated
         if (HP <= 0)
         {
-            // Update game goal
+            // Update game goal on enemy
             gameManager.instance.updateGameGoal(-1);
 
-            // Destroys the enemy GameObject
+            // Destroy enemy
             Destroy(gameObject);
         }
+        else
+        {
+            // Move towards the player's location when hit
+            enemyAgent.SetDestination(gameManager.instance.player.transform.position);
+            faceTarget();
+        }
     }
 
-    // Coroutine for flashing damage effect
-    IEnumerator flashDamage()
-    {
-        // Change the model's material color to indicate damage
-        model.material.color = colorDamage;
-
-        // Wait for a short period
-        yield return new WaitForSeconds(0.1f);
-
-        // Restore the original color of the model
-        model.material.color = colorOrigin;
-    }
-
-    // Handles trigger collider
+    // Trigger detection for player entering range
     void OnTriggerEnter(Collider other)
     {
-        // Checks to see if the collider belongs to the player
-        if(other.CompareTag("Player"))
-        {
+        if (other.CompareTag("Player"))
             // Player is in range
-            targetInRange = true;
-        }
+            playerInRange = true;
     }
 
-    // Handles trigger collider exit
+    // Trigger detection for player leaving range
     void OnTriggerExit(Collider other)
     {
-        // Checks to see if the collider belongs to the player
         if (other.CompareTag("Player"))
-        {
             // Player is out of range
-            targetInRange = false;
-        }
-    }    
-
-    // Rotates towards player
-    void FaceTarget()
-    {
-        // Calculates rotation facing the player
-        Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
-
-        // The enemy will smoothly rotate towards the player
-        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5);
+            playerInRange = false;
     }
 
-    // Enemy will attack the player
-    //void Attack()
-    //{
-    //    gameManager.instance.player.takeDamage(damageAmount);
-    //}
+    // Enemy faces the player
+    void faceTarget()
+    {
+        Quaternion rot = Quaternion.LookRotation(playerDir);
+        transform.rotation = Quaternion.Lerp(transform.rotation, rot, Time.deltaTime * faceTargetSpeed);
+    }
+
+    // Flash damage effect
+    IEnumerator flashDamage()
+    {
+        model.material.color = colorDamage;
+        yield return new WaitForSeconds(0.1f);
+        model.material.color = colorigin;
+    }
+
+    // Handles attacking
+    IEnumerator Attack()
+    {
+        isAttacking = true;
+        while (playerInRange && canSeePlayer())
+        {
+            // Wait for the next attack
+            yield return new WaitForSeconds(hitSpeed);
+        }
+        isAttacking = false;
+    }
 }
