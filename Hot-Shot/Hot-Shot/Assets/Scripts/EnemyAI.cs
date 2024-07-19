@@ -184,7 +184,6 @@ public class EnemyAI : MonoBehaviour, IDamage
         //Check if tank enemy
         if (isTank)
         {
-
             for (int i = 0; i < burstCount; i++)
             {
                 Instantiate(bullet, ShootPos.position, transform.rotation);
