@@ -32,11 +32,29 @@ public class EnemyAI : MonoBehaviour, IDamage
     // How the fast the enemy shoots
     [SerializeField] float shootRate;
 
+    //Tank enemy burst shooting
+    [SerializeField] int burstCount;
+
+    //Tank enemy burst delay
+    [SerializeField] float burstDelay;
+
+    //Melee damage
+    [SerializeField] int meleeDmg;
+
+    //Attack rate (melee)
+    [SerializeField] float atkRate;
+
+    //Bool for basic ranged or melee
+    [SerializeField] bool isMelee;
+
+    //Bool for tank
+    [SerializeField] bool isTank;
+
     // Enemies original color
     Color colorigin;
 
-    // Is the enemy shooting
-    bool isShooting;
+    // Is the enemy attacking
+    bool isAttacking;
 
     // Is the player within in range of the enemy
     bool playerInRange;
@@ -69,9 +87,16 @@ public class EnemyAI : MonoBehaviour, IDamage
             
 
             // If the enemy is not shooting, start shooting
-            if (!isShooting)
+            if (!isAttacking)
             {
-                StartCoroutine(shoot());
+                if (!isMelee)
+                {
+                    StartCoroutine(shoot());
+                }
+                else
+                {
+                    StartCoroutine(meleeAttack());
+                }
             }
         }
     }
@@ -123,8 +148,10 @@ public class EnemyAI : MonoBehaviour, IDamage
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
-            // Player is in range
-            playerInRange = true;
+        {
+                // Player is in range
+                playerInRange = true;
+        }
     }
 
     // Trigger detection for player leaving range
@@ -153,9 +180,32 @@ public class EnemyAI : MonoBehaviour, IDamage
     // Handles shooting
     IEnumerator shoot()
     {
-        isShooting = true;
-        Instantiate(bullet, ShootPos.position, transform.rotation);
-        yield return new WaitForSeconds(shootRate);
-        isShooting = false;
+        isAttacking = true;
+        //Check if tank enemy
+        if (isTank)
+        {
+
+            for (int i = 0; i < burstCount; i++)
+            {
+                Instantiate(bullet, ShootPos.position, transform.rotation);
+                yield return new WaitForSeconds(shootRate);
+            }
+            yield return new WaitForSeconds(burstDelay);
+        }
+        else
+        {
+            Instantiate(bullet, ShootPos.position, transform.rotation);
+            yield return new WaitForSeconds(shootRate);
+        }
+        isAttacking = false;
+    }
+
+    // Handles melee
+    IEnumerator meleeAttack()
+    {
+        isAttacking = true;
+        gameManager.instance.player.GetComponent<PlayerHealth>().takeDamage(meleeDmg);
+        yield return new WaitForSeconds(atkRate);
+        isAttacking = false;
     }
 }
