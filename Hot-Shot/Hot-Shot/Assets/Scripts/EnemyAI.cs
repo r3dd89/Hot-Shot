@@ -50,6 +50,11 @@ public class EnemyAI : MonoBehaviour, IDamage
     //Bool for tank
     [SerializeField] bool isTank;
 
+    // For teleportation
+    [SerializeField] Vector3 teleportArea;
+    [SerializeField] Vector3 teleportAreaSize;
+    [SerializeField] float teleportCooldown = 10f;
+
     // Enemies original color
     Color colorigin;
 
@@ -65,6 +70,8 @@ public class EnemyAI : MonoBehaviour, IDamage
     // Direction vector to the player
     Vector3 playerDir;
 
+    // Tracks time for teleportation cool down
+    float nextTeleport;
     // Start is called before the first frame update
     void Start()
     {
@@ -73,6 +80,10 @@ public class EnemyAI : MonoBehaviour, IDamage
 
         // Update the game goal when the enemy spawns
         gameManager.instance.updateGameGoal(1);
+
+        // Initializes the teleportation time
+        //https://docs.unity3d.com/ScriptReference/Time-time.html
+        nextTeleport = Time.time + teleportCooldown;
     }
 
     // Update is called once per frame
@@ -98,6 +109,12 @@ public class EnemyAI : MonoBehaviour, IDamage
                     StartCoroutine(meleeAttack());
                 }
             }
+        }
+
+        // Check if it's time to teleport
+        if(Time.time >= nextTeleport)
+        {
+            nextTeleport = Time.time + teleportCooldown;
         }
     }
 
@@ -206,5 +223,20 @@ public class EnemyAI : MonoBehaviour, IDamage
         gameManager.instance.player.GetComponent<PlayerHealth>().takeDamage(meleeDmg);
         yield return new WaitForSeconds(atkRate);
         isAttacking = false;
+    }
+
+    void Teleport()
+    {
+        float randomX = Random.Range(teleportArea.x - teleportAreaSize.x / 2, teleportArea.x + teleportAreaSize.x / 2);
+        float randomY = Random.Range(teleportArea.y - teleportAreaSize.y / 2, teleportArea.y + teleportAreaSize.y / 2);
+        float randomZ = Random.Range(teleportArea.z - teleportAreaSize.z / 2, teleportArea.z + teleportAreaSize.z / 2);
+
+        Vector3 position = new Vector3(randomX, randomY, randomZ);
+
+        NavMeshHit hit;
+        if(NavMesh.SamplePosition(position, out hit, 1.0f, NavMesh.AllAreas))
+        {
+            transform.position = hit.position;
+        }
     }
 }
