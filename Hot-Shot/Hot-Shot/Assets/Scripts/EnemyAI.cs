@@ -17,6 +17,9 @@ public class EnemyAI : MonoBehaviour, IDamage
     // Position to instantiate bullets from
     [SerializeField] Transform ShootPos;
 
+    // Sets the head position of the enemy
+    [SerializeField] Transform headPos;
+
     // Enemy health 
     [SerializeField] int HP;
 
@@ -67,6 +70,9 @@ public class EnemyAI : MonoBehaviour, IDamage
     // Angle to player
     float angToPlayer;
 
+    // Stopping distance
+    float stoppingDistOrigin;
+
     // Direction vector to the player
     Vector3 playerDir;
 
@@ -80,6 +86,9 @@ public class EnemyAI : MonoBehaviour, IDamage
 
         // Update the game goal when the enemy spawns
         gameManager.instance.updateGameGoal(1);
+
+        // Stores the original stopping distance
+        stoppingDistOrigin = enemyAgent.stoppingDistance;
 
         // Initializes the teleportation time
         //https://docs.unity3d.com/ScriptReference/Time-time.html
@@ -121,18 +130,26 @@ public class EnemyAI : MonoBehaviour, IDamage
     // Check if the enemy can see the player
     bool canSeePlayer()
     {
-        playerDir = gameManager.instance.player.transform.position - transform.position;
+        playerDir = gameManager.instance.player.transform.position - headPos.position;
         angToPlayer = Vector3.Angle(playerDir, transform.forward);
 
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, playerDir, out hit))
+        if (Physics.Raycast(headPos.position, playerDir, out hit))
         {
             // If the raycast hits the player and the player is within view angle
             if (hit.collider.CompareTag("Player") && angToPlayer <= viewAngle)
             {
+                enemyAgent.SetDestination(gameManager.instance.player.transform.position);
+                if (enemyAgent.remainingDistance <= enemyAgent.stoppingDistance)
+                    faceTarget();
+
+                if (!isAttacking)
+                    StartCoroutine(shoot());
+                enemyAgent.stoppingDistance = stoppingDistOrigin;
                 return true;
             }
         }
+        enemyAgent.stoppingDistance = 0;
         return false;
     }
 
@@ -142,22 +159,17 @@ public class EnemyAI : MonoBehaviour, IDamage
         // Reduces HP by the damage amount
         HP -= amount;
 
-        // Flash Damage effect
-        StartCoroutine(flashDamage());
+        // Sets enemy location if being shot from out of sight
+        enemyAgent.SetDestination(gameManager.instance.player.transform.position);
 
+        // does the flash damage
+        StartCoroutine(flashDamage());
+        
+        // destroying the enemy
         if (HP <= 0)
         {
-            // Update game goal on enemy
             gameManager.instance.updateGameGoal(-1);
-
-            // Destroy enemy
             Destroy(gameObject);
-        }
-        else
-        {
-            // Move towards the player's location when hit
-            enemyAgent.SetDestination(gameManager.instance.player.transform.position);
-            faceTarget();
         }
     }
 

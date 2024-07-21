@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour, IDamage
+public class PlayerMovement : MonoBehaviour
 {
 
     // This references the CharacterController component
@@ -26,6 +26,7 @@ public class PlayerMovement : MonoBehaviour, IDamage
 
     // How much damage the players gun can do
     [SerializeField] int shootDamage;
+    [SerializeField] int maxAmmo;
 
     // How often the player can shoot
     [SerializeField] float shootRate;
@@ -34,7 +35,6 @@ public class PlayerMovement : MonoBehaviour, IDamage
     [SerializeField] int shootDistance;
 
     // The amount of hp the player has
-    [SerializeField] int HP;
 
     // The ammo for the weapon
     [SerializeField] GameObject cube;
@@ -44,7 +44,7 @@ public class PlayerMovement : MonoBehaviour, IDamage
     Vector3 playerVelocity;
 
     int jumpCount;
-    int HPOrigin;
+    int ammoOrigin;
 
     // are we shooting?
     bool isShooting;
@@ -62,7 +62,7 @@ public class PlayerMovement : MonoBehaviour, IDamage
     // Start is called before the first frame update
     void Start()
     {
-        HPOrigin = HP;
+        ammoOrigin = maxAmmo;
     }
 
     // Update is called once per frame
@@ -145,25 +145,30 @@ public class PlayerMovement : MonoBehaviour, IDamage
     }
     IEnumerator shoot()
     {
-
-        isShooting = true;
-
         //Ignoring the player
         int layerMask = ~ignoreMask & ~(1 << LayerMask.NameToLayer("Player"));
-
-        // used to return info on what the raycast hits
         RaycastHit hit;
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDistance, layerMask))
+        if (maxAmmo > 0)
         {
-            Debug.Log(hit.collider.name);
-            IDamage dmg = hit.collider.GetComponent<IDamage>();
-            if (hit.transform != transform && dmg != null)
-                dmg.takeDamage(shootDamage);
-            //Instantiate(cube, hit.point, transform.rotation);
-        }
+            isShooting = true;
 
-        yield return new WaitForSeconds(shootRate);
-        isShooting = false;
+            // used to return info on what the raycast hits
+            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDistance, layerMask))
+            {
+                Debug.Log(hit.collider.name);
+                IDamage dmg = hit.collider.GetComponent<IDamage>();
+                if (hit.transform != transform && dmg != null)
+                    dmg.takeDamage(shootDamage);
+                maxAmmo -= 1;
+                //Instantiate(cube, hit.point, transform.rotation);
+            }
+
+            yield return new WaitForSeconds(shootRate);
+            isShooting = false;
+
+        }
+        else if (maxAmmo <= 0)
+            Debug.Log("No Ammo");
     }
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
@@ -204,12 +209,4 @@ public class PlayerMovement : MonoBehaviour, IDamage
         canWallJump = true;
     }
 
-    public void takeDamage(int amount)
-    {
-        HP -= amount;
-        if (HP <= 0)
-        {
-            gameManager.instance.LoseGame();
-        }
-    }
 }

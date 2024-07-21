@@ -19,7 +19,13 @@ public class PlayerHealth : MonoBehaviour, IDamage
     // Duration of the damage flash effect
     [SerializeField] float flashDuration = 0.2f;
 
+    // Health level when the health alerts show
+    [SerializeField] int lowHealthThreshold = 20;
 
+    // Health alert fade out
+    [SerializeField] float fadeDuration = 1.0f;
+
+    private Coroutine healthLowCoroutine;
 
     // Start is called before the first frame update
     void Start()
@@ -32,6 +38,8 @@ public class PlayerHealth : MonoBehaviour, IDamage
         {
             damageFlashImage.SetActive(false);
         }
+        
+        // Showing the low health alert
     }
 
     // Event for health updates
@@ -45,6 +53,8 @@ public class PlayerHealth : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
+
+        
         // Reduce the current health by the damage amount
         currentHealth -= amount;
 
@@ -54,10 +64,14 @@ public class PlayerHealth : MonoBehaviour, IDamage
         // Flash the damage effect
         StartCoroutine(FlashDamageEffect());
 
+        // Check if health is below 20 and handle health low alert
+        checkHealthAlert();
+
         if (currentHealth <= 0)
         {
             Die();
         }
+        
     }
 
     void Die()
@@ -75,6 +89,15 @@ public class PlayerHealth : MonoBehaviour, IDamage
             damageFlashImage.SetActive(false);
         }
     }
+    void checkHealthAlert()
+    {
+        if (currentHealth <= lowHealthThreshold)
+        {
+            gameManager.instance.HandleLowHealthAlert(true);
+        }
+        else
+        {
+            gameManager.instance.HandleLowHealthAlert(false);
+        }
+    }
 }
-
-

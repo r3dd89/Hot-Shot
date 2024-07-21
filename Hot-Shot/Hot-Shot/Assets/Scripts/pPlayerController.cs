@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class pPlayerController : MonoBehaviour
 {
     public pPlayerStatus playerStatus;
     public pPlayerScore playerScore;

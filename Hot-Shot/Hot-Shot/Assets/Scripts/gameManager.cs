@@ -21,7 +21,12 @@ public class gameManager : MonoBehaviour
     public GameObject prevMenu; // The previous menu before the current one
     public GameObject damageFlashScreen; // The screen that flashes when the player takes damage
 
+    public GameObject healthLowAlert; // The screen that flashes when the players health is low
+    private bool healthLowAlertShown;
+    [SerializeField] Material healthLowMaterial;
+    [SerializeField] float fadeDuration = 1.0f;
 
+    private Coroutine healthLowCoroutine;
 
     public bool isPaused; // Whether the game is currently paused
     public bool invertY; // Whether the Y-axis is inverted
@@ -45,6 +50,9 @@ public class gameManager : MonoBehaviour
         {
             playerHealth.damageFlashImage = damageFlashScreen;
         }
+
+        // Ensure the shader material is initially transparent
+        SetMaterialAlpha(0f);
     }
 
     // Update is called once per frame
@@ -176,5 +184,55 @@ public class gameManager : MonoBehaviour
         int sensitivity = Mathf.RoundToInt(sens);
         if (playerVisionScript != null)
             playerVisionScript.SetSensitivity(sensitivity);
+    }
+    // Handles the health low alert
+    public void HandleLowHealthAlert(bool isLowHealth)
+    {
+        if (isLowHealth)
+        {
+            if (healthLowCoroutine == null)
+            {
+                healthLowCoroutine = StartCoroutine(FadeHealthLowAlert());
+            }
+        }
+        else
+        {
+            if (healthLowCoroutine != null)
+            {
+                StopCoroutine(healthLowCoroutine);
+                healthLowCoroutine = null;
+                SetMaterialAlpha(0f);
+            }
+        }
+    }
+
+    IEnumerator FadeHealthLowAlert()
+    {
+        while (true)
+        {
+            yield return StartCoroutine(FadeTo(1f, fadeDuration));
+            yield return StartCoroutine(FadeTo(0f, fadeDuration));
+        }
+    }
+
+    IEnumerator FadeTo(float targetAlpha, float duration)
+    {
+        float startAlpha = healthLowMaterial.GetFloat("_Alpha");
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float alpha = Mathf.Lerp(startAlpha, targetAlpha, elapsedTime / duration);
+            SetMaterialAlpha(alpha);
+            yield return null;
+        }
+
+        SetMaterialAlpha(targetAlpha);
+    }
+
+    void SetMaterialAlpha(float alpha)
+    {
+        healthLowMaterial.SetFloat("_Alpha", alpha);
     }
 }
