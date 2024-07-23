@@ -3444,7 +3444,9 @@ MonoBehaviour:
   prevMenu: {fileID: 0}
   damageFlashScreen: {fileID: 818451996}
   healthLowAlert: {fileID: 1059425381}
+  ammoLowAlert: {fileID: 599172408}
   healthLowMaterial: {fileID: 2100000, guid: 3c8f33105f8644349815cc62273c9f88, type: 2}
+  ammoLowMaterial: {fileID: 2100000, guid: ff24692383d715743bb061fecf6f468c, type: 2}
   fadeDuration: 1
   isPaused: 0
   invertY: 0

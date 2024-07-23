@@ -93,11 +93,11 @@ public class PlayerHealth : MonoBehaviour, IDamage
     {
         if (currentHealth <= lowHealthThreshold)
         {
-            gameManager.instance.HandleLowHealthAlert(true);
+            gameManager.instance.HandleStatsLowAlert(true, false);
         }
         else
         {
-            gameManager.instance.HandleLowHealthAlert(false);
+            gameManager.instance.HandleStatsLowAlert(false, false);
         }
     }
 }

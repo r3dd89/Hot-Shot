@@ -8,23 +8,30 @@ using UnityEngine.UI; //Add using UnityEngine.UI
 public class gameManager : MonoBehaviour
 {
     public static gameManager instance; // Singleton instance
-
+    [Header("----- Menu Screens -----")]
     [SerializeField] GameObject menuActive; // The currently active menu
     [SerializeField] GameObject menuPause; // The pause menu
     [SerializeField] GameObject menuWin; // The win menu
     [SerializeField] GameObject menuLose; // The lose menu
     [SerializeField] GameObject menuSettings; // The settings menu
 
+    [Header("----- Player Refs -----")]
     public GameObject player; // The player GameObject
     public PlayerMovement playerScript; // Reference to the PlayerMovement script
     public PlayerVision playerVisionScript; // Reference to the PlayerVision script
     public GameObject prevMenu; // The previous menu before the current one
-    public GameObject damageFlashScreen; // The screen that flashes when the player takes damage
+    
 
-    public GameObject healthLowAlert; // The screen that flashes when the players health is low
-    private bool healthLowAlertShown;
+    [Header("----- Alerts -----")]
+    public GameObject damageFlashScreen; // The screen that flashes when the player takes damage
+    public GameObject healthLowAlert; // The border that flashes when the players health is low
+    public GameObject ammoLowAlert; // The border that flashes when the players health is low
     [SerializeField] Material healthLowMaterial;
+    [SerializeField] Material ammoLowMaterial;
     [SerializeField] float fadeDuration = 1.0f;
+
+    private bool ammoLowAlertShown;
+    private bool healthLowAlertShown;
 
     private Coroutine healthLowCoroutine;
 
@@ -185,14 +192,18 @@ public class gameManager : MonoBehaviour
         if (playerVisionScript != null)
             playerVisionScript.SetSensitivity(sensitivity);
     }
-    // Handles the health low alert
-    public void HandleLowHealthAlert(bool isLowHealth)
+    // Handles the stats low alert
+    public void HandleStatsLowAlert(bool isLowHealth, bool isLowAmmo)
     {
         if (isLowHealth)
         {
             if (healthLowCoroutine == null)
             {
                 healthLowCoroutine = StartCoroutine(FadeHealthLowAlert());
+            }
+            else if (isLowAmmo)
+            {
+
             }
         }
         else
@@ -207,6 +218,14 @@ public class gameManager : MonoBehaviour
     }
 
     IEnumerator FadeHealthLowAlert()
+    {
+        while (true)
+        {
+            yield return StartCoroutine(FadeTo(1f, fadeDuration));
+            yield return StartCoroutine(FadeTo(0f, fadeDuration));
+        }
+    }
+    IEnumerator FadeAmmoLowAlert()
     {
         while (true)
         {
