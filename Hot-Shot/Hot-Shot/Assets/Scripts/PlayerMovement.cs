@@ -39,6 +39,9 @@ public class PlayerMovement : MonoBehaviour
     // The ammo for the weapon
     [SerializeField] GameObject cube;
 
+    [SerializeField] PickupFlash pickupFlash;
+
+
     // Direction vector for player mobility
     Vector3 moveDirection;
     Vector3 playerVelocity;
@@ -74,6 +77,19 @@ public class PlayerMovement : MonoBehaviour
         sprint();
 
         CheckCollisions();
+    }
+
+    // Method to handle ammo pickup
+    public void PickupAmmo(int ammoAmount)
+    {
+        maxAmmo += ammoAmount;
+        if (maxAmmo > ammoOrigin)
+        {
+            maxAmmo = ammoOrigin;
+        }
+
+        // Trigger the flash effect
+        pickupFlash.Flash();
     }
 
     // Method that handles the player's movement

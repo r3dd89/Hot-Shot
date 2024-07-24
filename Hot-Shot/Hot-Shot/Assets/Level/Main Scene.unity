@@ -2876,6 +2876,7 @@ MonoBehaviour:
   shootRate: 0.5
   shootDistance: 15
   cube: {fileID: 0}
+  pickupFlash: {fileID: 0}
 --- !u!114 &535911776
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2895,6 +2896,7 @@ MonoBehaviour:
   flashDuration: 0.2
   lowHealthThreshold: 20
   fadeDuration: 1
+  pickupFlash: {fileID: 0}
 --- !u!1 &549452106
 GameObject:
   m_ObjectHideFlags: 0

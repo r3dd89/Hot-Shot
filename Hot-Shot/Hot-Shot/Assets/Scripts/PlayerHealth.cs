@@ -25,6 +25,8 @@ public class PlayerHealth : MonoBehaviour, IDamage
     // Health alert fade out
     [SerializeField] float fadeDuration = 1.0f;
 
+    [SerializeField] PickupFlash pickupFlash;
+
     private Coroutine healthLowCoroutine;
 
     // Start is called before the first frame update
@@ -72,6 +74,18 @@ public class PlayerHealth : MonoBehaviour, IDamage
             Die();
         }
         
+    }
+    // Method to handle health pickup
+    public void PickupHealth(int healthAmount)
+    {
+        currentHealth += healthAmount;
+        if (currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+
+        // Trigger the flash effect
+        pickupFlash.Flash();
     }
 
     void Die()
