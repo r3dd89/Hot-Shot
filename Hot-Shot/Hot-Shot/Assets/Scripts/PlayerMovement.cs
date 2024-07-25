@@ -9,6 +9,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] CharacterController characterController;
     [SerializeField] LayerMask ignoreMask;
 
+    [SerializeField] PlayerUI playerUI;
+
     // Movement speed of player
     [SerializeField] float speed;
 
@@ -26,7 +28,7 @@ public class PlayerMovement : MonoBehaviour
 
     // How much damage the players gun can do
     [SerializeField] int shootDamage;
-    [SerializeField] public int maxAmmo;
+    [SerializeField] public int ammoCount;
 
     // How often the player can shoot
     [SerializeField] float shootRate;
@@ -47,7 +49,7 @@ public class PlayerMovement : MonoBehaviour
     Vector3 playerVelocity;
 
     int jumpCount;
-    int ammoOrigin;
+    public int maxAmmo;
 
     // are we shooting?
     bool isShooting;
@@ -65,7 +67,8 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ammoOrigin = maxAmmo;
+        ammoCount = maxAmmo;
+        playerUI = GameObject.FindObjectOfType<PlayerUI>();
     }
 
     // Update is called once per frame
@@ -75,6 +78,9 @@ public class PlayerMovement : MonoBehaviour
 
         HandleMovement();
         sprint();
+        if(playerUI != null) {
+            playerUI.UpdateAmmo(ammoCount);    
+        }
 
         CheckCollisions();
     }
@@ -82,10 +88,10 @@ public class PlayerMovement : MonoBehaviour
     // Method to handle ammo pickup
     public void PickupAmmo(int ammoAmount)
     {
-        maxAmmo += ammoAmount;
-        if (maxAmmo > ammoOrigin)
+        ammoCount += ammoAmount;
+        if (ammoCount > maxAmmo)
         {
-            maxAmmo = ammoOrigin;
+            ammoCount = maxAmmo;
         }
 
         // Trigger the flash effect
@@ -145,7 +151,7 @@ public class PlayerMovement : MonoBehaviour
         playerVelocity.y -= gravity * Time.deltaTime;
         characterController.Move(playerVelocity * Time.deltaTime);
 
-        if (Input.GetButton("Shoot") && !isShooting && maxAmmo > 0)
+        if (Input.GetButton("Shoot") && !isShooting && ammoCount > 0)
             StartCoroutine(shoot());
     }
 
@@ -164,7 +170,7 @@ public class PlayerMovement : MonoBehaviour
         //Ignoring the player
         int layerMask = ~ignoreMask & ~(1 << LayerMask.NameToLayer("Player"));
         RaycastHit hit;
-        if (maxAmmo > 0)
+        if (ammoCount > 0)
         {
             isShooting = true;
 
@@ -182,8 +188,9 @@ public class PlayerMovement : MonoBehaviour
             isShooting = false;
 
         }
-        maxAmmo -= 1;
-        if (maxAmmo == 0)
+        ammoCount -= 1;
+        playerUI.UpdateAmmo(ammoCount);
+        if (ammoCount == 0)
             gameManager.instance.HandleStatsLowAlert();
     }
     void OnControllerColliderHit(ControllerColliderHit hit)
@@ -224,5 +231,4 @@ public class PlayerMovement : MonoBehaviour
         delayReturn = true;
         canWallJump = true;
     }
-
 }

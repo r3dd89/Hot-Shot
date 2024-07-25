@@ -33,10 +33,12 @@ public class PlayerUI : MonoBehaviour
         playerScore.OnPlayerScoreUpdate += HandlePlayerScoreUpdate;
         levelManager.OnLevelUpdate += HandleLevelUpdate;
         levelManager.OnEnemyUpdate += HandleEnemyUpdate;
+
+        
     }
 
     // Update the HP text in the UI
-    void UpdateHP(int hp)
+    public void UpdateHP(int hp)
     {
         // Set the text of the hpText UI element to display the current HP
 
@@ -44,8 +46,9 @@ public class PlayerUI : MonoBehaviour
     }
 
     // Update the ammo text in the UI
-    void UpdateAmmo(int ammo)
+    public void UpdateAmmo(int ammo)
     {
+        
         // Set the text of the ammoText UI element to display the current ammo count
         ammoText.text = "Ammo: " + ammo.ToString();
     }

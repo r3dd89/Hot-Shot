@@ -11,12 +11,14 @@ public class buttonFunctions : MonoBehaviour
     // Resumes the game by unpausing it
     public void resume()
     {
+        Debug.Log("Resume");
         gameManager.instance.stateUnpause();
     }
 
     // Restarts the game by reloading the current scene
     public void restart()
     {
+        Debug.Log("Restart");
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         gameManager.instance.stateUnpause();
     }
@@ -24,6 +26,7 @@ public class buttonFunctions : MonoBehaviour
     // Opens the settings menu
     public void settings()
     {
+        Debug.Log("Settings");
         gameManager.instance.OpenSettingsMenu();
     }
 
@@ -54,6 +57,7 @@ public class buttonFunctions : MonoBehaviour
     // Quits the game or stops play mode in the Unity Editor
     public void quit()
     {
+        Debug.Log("Quit");
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else

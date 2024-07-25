@@ -5,10 +5,12 @@ using UnityEngine;
 public class PlayerHealth : MonoBehaviour, IDamage
 {
     // Player's maximum health
-    [SerializeField] public int maxHealth = 100;
+    [SerializeField] public int maxHealth;
 
     // Player's current health
     public int currentHealth;
+
+    public gameManager gameManager;
 
     // Reference to the lose menu in the UI
     [SerializeField] GameObject menuLose;
@@ -68,7 +70,7 @@ public class PlayerHealth : MonoBehaviour, IDamage
 
         if (currentHealth <= 0)
         {
-            Die();
+            gameManager.instance.LoseGame();
         }
         
     }
@@ -83,12 +85,6 @@ public class PlayerHealth : MonoBehaviour, IDamage
 
         // Trigger the flash effect
         pickupFlash.Flash();
-    }
-
-    void Die()
-    {
-        // Show the lose menu
-        menuLose.SetActive(true);
     }
 
     IEnumerator FlashDamageEffect()

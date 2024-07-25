@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5128b105f8f6f3b46991b8b07ca89773, type: 3}
+  m_Name: AmmoPickup
+  m_EditorClassIdentifier: 
+  AmmoBox: {fileID: 6168005007418702355, guid: c0fd0a29049c9844d9e2d57a26c54edb, type: 3}
+  HealthBox: {fileID: 0}
+  HealAmount: 0
+  AmmoAmount: 10

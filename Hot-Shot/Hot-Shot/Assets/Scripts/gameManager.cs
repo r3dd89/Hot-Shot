@@ -231,7 +231,7 @@ public class gameManager : MonoBehaviour
         // Checking ammo
         if (playerScript != null)
         {
-            if (playerScript.maxAmmo == 0 && !ammoLowAlertShown)
+            if (playerScript.ammoCount == 0 && !ammoLowAlertShown)
             {
                 if (ammoLowCoroutine == null && ammoLowAlert != null)
                 {
@@ -239,7 +239,7 @@ public class gameManager : MonoBehaviour
                     ammoLowAlertShown = true;
                 }
             }
-            else if (playerScript.maxAmmo > 0 && ammoLowAlertShown)
+            else if (playerScript.ammoCount > 0 && ammoLowAlertShown)
             {
                 if (ammoLowCoroutine != null)
                 {
@@ -292,6 +292,7 @@ public class gameManager : MonoBehaviour
 
         while (elapsedTime < duration)
         {
+
             elapsedTime += Time.deltaTime;
             float alpha = Mathf.Lerp(startAlpha, targetAlpha, elapsedTime / duration);
             SetMaterialAlpha(alpha, ammoLowMaterial);
