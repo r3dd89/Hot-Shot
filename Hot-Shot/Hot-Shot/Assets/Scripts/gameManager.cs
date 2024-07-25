@@ -19,6 +19,7 @@ public class gameManager : MonoBehaviour
     public GameObject player; // The player GameObject
     public PlayerMovement playerScript; // Reference to the PlayerMovement script
     public PlayerVision playerVisionScript; // Reference to the PlayerVision script
+    public PlayerHealth playerHealthScript;
     public GameObject prevMenu; // The previous menu before the current one
     
 
@@ -34,6 +35,7 @@ public class gameManager : MonoBehaviour
     private bool healthLowAlertShown;
 
     private Coroutine healthLowCoroutine;
+    private Coroutine ammoLowCoroutine;
 
     public bool isPaused; // Whether the game is currently paused
     public bool invertY; // Whether the Y-axis is inverted
@@ -48,8 +50,12 @@ public class gameManager : MonoBehaviour
 
         // Find the player GameObject and get its PlayerMovement script
         player = GameObject.FindWithTag("Player");
-        playerScript = player.GetComponent<PlayerMovement>();
-        //playerVisionScript = player.GetComponent<PlayerVision>(); // Initialize playerVisionScript
+        if (player != null)
+        {
+            playerScript = player.GetComponent<PlayerMovement>();
+            playerHealthScript = player.GetComponent<PlayerHealth>();
+        }
+
 
         // Assign the damage flash image to the player health script
         PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
@@ -59,7 +65,11 @@ public class gameManager : MonoBehaviour
         }
 
         // Ensure the shader material is initially transparent
-        SetMaterialAlpha(0f);
+        if (healthLowMaterial != null && ammoLowMaterial != null)
+        {
+            SetMaterialAlpha(0f, ammoLowMaterial);
+            SetMaterialAlpha(0f, healthLowMaterial);
+        }
     }
 
     // Update is called once per frame
@@ -193,48 +203,74 @@ public class gameManager : MonoBehaviour
             playerVisionScript.SetSensitivity(sensitivity);
     }
     // Handles the stats low alert
-    public void HandleStatsLowAlert(bool isLowHealth, bool isLowAmmo)
+    public void HandleStatsLowAlert()
     {
-        if (isLowHealth)
+        // Checking health
+        if (playerHealthScript != null)
         {
-            if (healthLowCoroutine == null)
+            if (playerHealthScript.currentHealth <= 20 && !healthLowAlertShown)
             {
-                healthLowCoroutine = StartCoroutine(FadeHealthLowAlert());
+                if (healthLowCoroutine == null)
+                {
+                    healthLowCoroutine = StartCoroutine(FadeHealthLowAlert());
+                    healthLowAlertShown = true;
+                }
             }
-            else if (isLowAmmo)
+            else if (playerHealthScript.currentHealth > 20 && healthLowAlertShown)
             {
-
+                if (healthLowCoroutine != null)
+                {
+                    StopCoroutine(healthLowCoroutine);
+                    healthLowCoroutine = null;
+                    SetMaterialAlpha(0f, healthLowMaterial);
+                }
+                healthLowAlertShown = false;
             }
         }
-        else
+
+        // Checking ammo
+        if (playerScript != null)
         {
-            if (healthLowCoroutine != null)
+            if (playerScript.maxAmmo == 0 && !ammoLowAlertShown)
             {
-                StopCoroutine(healthLowCoroutine);
-                healthLowCoroutine = null;
-                SetMaterialAlpha(0f);
+                if (ammoLowCoroutine == null && ammoLowAlert != null)
+                {
+                    ammoLowCoroutine = StartCoroutine(FadeAmmoLowAlert());
+                    ammoLowAlertShown = true;
+                }
+            }
+            else if (playerScript.maxAmmo > 0 && ammoLowAlertShown)
+            {
+                if (ammoLowCoroutine != null)
+                {
+                    StopCoroutine(ammoLowCoroutine);
+                    ammoLowCoroutine = null;
+                    SetMaterialAlpha(0f, ammoLowMaterial);
+                }
+                ammoLowAlertShown = false;
             }
         }
     }
+
 
     IEnumerator FadeHealthLowAlert()
     {
         while (true)
         {
-            yield return StartCoroutine(FadeTo(1f, fadeDuration));
-            yield return StartCoroutine(FadeTo(0f, fadeDuration));
+            yield return StartCoroutine(FadeHealthTo(1f, fadeDuration));
+            yield return StartCoroutine(FadeHealthTo(0f, fadeDuration));
         }
     }
     IEnumerator FadeAmmoLowAlert()
     {
         while (true)
         {
-            yield return StartCoroutine(FadeTo(1f, fadeDuration));
-            yield return StartCoroutine(FadeTo(0f, fadeDuration));
+            yield return StartCoroutine(FadeAmmoTo(1f, fadeDuration));
+            yield return StartCoroutine(FadeAmmoTo(0f, fadeDuration));
         }
     }
 
-    IEnumerator FadeTo(float targetAlpha, float duration)
+    IEnumerator FadeHealthTo(float targetAlpha, float duration)
     {
         float startAlpha = healthLowMaterial.GetFloat("_Alpha");
         float elapsedTime = 0f;
@@ -243,15 +279,30 @@ public class gameManager : MonoBehaviour
         {
             elapsedTime += Time.deltaTime;
             float alpha = Mathf.Lerp(startAlpha, targetAlpha, elapsedTime / duration);
-            SetMaterialAlpha(alpha);
+            SetMaterialAlpha(alpha, healthLowMaterial);
             yield return null;
         }
 
-        SetMaterialAlpha(targetAlpha);
+        SetMaterialAlpha(targetAlpha, healthLowMaterial);
+    }
+    IEnumerator FadeAmmoTo(float targetAlpha, float duration)
+    {
+        float startAlpha = ammoLowMaterial.GetFloat("_Alpha");
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float alpha = Mathf.Lerp(startAlpha, targetAlpha, elapsedTime / duration);
+            SetMaterialAlpha(alpha, ammoLowMaterial);
+            yield return null;
+        }
+
+        SetMaterialAlpha(targetAlpha, ammoLowMaterial);
     }
 
-    void SetMaterialAlpha(float alpha)
+    void SetMaterialAlpha(float alpha, Material material)
     {
-        healthLowMaterial.SetFloat("_Alpha", alpha);
+        material.SetFloat("_Alpha", alpha);
     }
 }

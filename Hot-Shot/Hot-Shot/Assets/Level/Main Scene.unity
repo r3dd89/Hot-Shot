@@ -2873,7 +2873,7 @@ MonoBehaviour:
   gravity: 22
   shootDamage: 1
   maxAmmo: 50
-  shootRate: 0.5
+  shootRate: 0.1
   shootDistance: 15
   cube: {fileID: 0}
   pickupFlash: {fileID: 0}
@@ -2889,13 +2889,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a13ba32af8a388c4cb6cc23b4df14133, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  currentHealth: 100
+  maxHealth: 30
+  currentHealth: 30
   menuLose: {fileID: 2127178041}
   damageFlashImage: {fileID: 0}
   flashDuration: 0.2
   lowHealthThreshold: 20
-  fadeDuration: 1
   pickupFlash: {fileID: 0}
 --- !u!1 &549452106
 GameObject:
@@ -3229,7 +3228,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &599172409
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3443,6 +3442,7 @@ MonoBehaviour:
   player: {fileID: 0}
   playerScript: {fileID: 535911775}
   playerVisionScript: {fileID: 1845229080}
+  playerHealthScript: {fileID: 0}
   prevMenu: {fileID: 0}
   damageFlashScreen: {fileID: 818451996}
   healthLowAlert: {fileID: 1059425381}
@@ -10949,7 +10949,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8679329013068214807, guid: 51d6c339ef8958f49811936d0346b563, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9117845849867263541, guid: 51d6c339ef8958f49811936d0346b563, type: 3}
       propertyPath: m_Enabled

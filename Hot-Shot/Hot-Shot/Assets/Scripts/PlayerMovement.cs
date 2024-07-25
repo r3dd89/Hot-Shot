@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
 
     // How much damage the players gun can do
     [SerializeField] int shootDamage;
-    [SerializeField] int maxAmmo;
+    [SerializeField] public int maxAmmo;
 
     // How often the player can shoot
     [SerializeField] float shootRate;
@@ -145,7 +145,7 @@ public class PlayerMovement : MonoBehaviour
         playerVelocity.y -= gravity * Time.deltaTime;
         characterController.Move(playerVelocity * Time.deltaTime);
 
-        if (Input.GetButton("Shoot") && !isShooting)
+        if (Input.GetButton("Shoot") && !isShooting && maxAmmo > 0)
             StartCoroutine(shoot());
     }
 
@@ -175,7 +175,6 @@ public class PlayerMovement : MonoBehaviour
                 IDamage dmg = hit.collider.GetComponent<IDamage>();
                 if (hit.transform != transform && dmg != null)
                     dmg.takeDamage(shootDamage);
-                maxAmmo -= 1;
                 //Instantiate(cube, hit.point, transform.rotation);
             }
 
@@ -183,8 +182,9 @@ public class PlayerMovement : MonoBehaviour
             isShooting = false;
 
         }
-        else if (maxAmmo <= 0)
-            Debug.Log("No Ammo");
+        maxAmmo -= 1;
+        if (maxAmmo == 0)
+            gameManager.instance.HandleStatsLowAlert();
     }
     void OnControllerColliderHit(ControllerColliderHit hit)
     {

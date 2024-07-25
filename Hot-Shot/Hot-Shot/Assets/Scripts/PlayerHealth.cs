@@ -22,9 +22,6 @@ public class PlayerHealth : MonoBehaviour, IDamage
     // Health level when the health alerts show
     [SerializeField] int lowHealthThreshold = 20;
 
-    // Health alert fade out
-    [SerializeField] float fadeDuration = 1.0f;
-
     [SerializeField] PickupFlash pickupFlash;
 
     private Coroutine healthLowCoroutine;
@@ -107,11 +104,13 @@ public class PlayerHealth : MonoBehaviour, IDamage
     {
         if (currentHealth <= lowHealthThreshold)
         {
-            gameManager.instance.HandleStatsLowAlert(true, false);
+            //Debug.Log("Health is low: " + currentHealth);
+            gameManager.instance.HandleStatsLowAlert();
         }
         else
         {
-            gameManager.instance.HandleStatsLowAlert(false, false);
+            Debug.Log("Health is not low: " + currentHealth);
+            gameManager.instance.HandleStatsLowAlert();
         }
     }
 }
