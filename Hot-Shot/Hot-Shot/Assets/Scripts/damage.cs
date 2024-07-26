@@ -22,13 +22,9 @@ public class damage : MonoBehaviour
             rb.velocity = transform.forward * bulletSpeed;
             Destroy(gameObject, destroyTime);
         }
-        if (type == damageType.stationary)
-        {
-            rb.velocity = transform.forward;
-        }
     }
 
-    public void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.isTrigger)
             return;

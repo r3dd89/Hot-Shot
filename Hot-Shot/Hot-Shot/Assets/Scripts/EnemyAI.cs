@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
+
 public class EnemyAI : MonoBehaviour, IDamage
 {
+    [Header("----- Parts of the Enemy -----")]
     // Reference to the NavMeshAgent component
     [SerializeField] NavMeshAgent enemyAgent;
 
@@ -20,6 +23,8 @@ public class EnemyAI : MonoBehaviour, IDamage
     // Sets the head position of the enemy
     [SerializeField] Transform headPos;
 
+    [Header("----- Enemy Stats -----")]
+    
     // Enemy health 
     [SerializeField] int HP;
 
@@ -29,8 +34,11 @@ public class EnemyAI : MonoBehaviour, IDamage
     // Field of view angle for detecting player
     [SerializeField] int viewAngle;
 
-    // Bullet prefab
-    [SerializeField] GameObject bullet;
+    // Roaming distance
+    [SerializeField] int roamDist;
+
+    // Time to roam
+    [SerializeField] int roamTimer;
 
     // How the fast the enemy shoots
     [SerializeField] float shootRate;
@@ -47,12 +55,17 @@ public class EnemyAI : MonoBehaviour, IDamage
     //Attack rate (melee)
     [SerializeField] float atkRate;
 
+    // Bullet prefab
+    [SerializeField] GameObject bullet;
+
+    [Header("----- Type of Enemy -----")]
     //Bool for basic ranged or melee
     [SerializeField] bool isMelee;
 
     //Bool for tank
     [SerializeField] bool isTank;
 
+    [Header("----- Teleportation Stats -----")]
     // For teleportation
     [SerializeField] Vector3 teleportArea;
     [SerializeField] Vector3 teleportAreaSize;
@@ -67,6 +80,12 @@ public class EnemyAI : MonoBehaviour, IDamage
     // Is the player within in range of the enemy
     bool playerInRange;
 
+    // Is the enemy shooting
+    bool isShooting;
+
+    // Is the enemy roaming
+    bool isRoaming;
+
     // Angle to player
     float angToPlayer;
 
@@ -75,6 +94,9 @@ public class EnemyAI : MonoBehaviour, IDamage
 
     // Direction vector to the player
     Vector3 playerDir;
+
+    // Getting the start position
+    Vector3 startPos;
 
     // Tracks time for teleportation cool down
     float nextTeleport;
@@ -87,6 +109,9 @@ public class EnemyAI : MonoBehaviour, IDamage
         // Update the game goal when the enemy spawns
         gameManager.instance.updateGameGoal(1);
 
+        // Stores the original starting Position
+        startPos = transform.position;
+
         // Stores the original stopping distance
         stoppingDistOrigin = enemyAgent.stoppingDistance;
 
@@ -98,33 +123,43 @@ public class EnemyAI : MonoBehaviour, IDamage
     // Update is called once per frame
     void Update()
     {
-        if (playerInRange && canSeePlayer())
+
+        float agentSpeed = enemyAgent.velocity.normalized.magnitude;
+
+        if (playerInRange && !canSeePlayer())
         {
-            // Sets the enemy's destination to the player's position
-            enemyAgent.SetDestination(gameManager.instance.player.transform.position);
-
-                faceTarget();
-            
-
-            // If the enemy is not shooting, start shooting
-            if (!isAttacking)
-            {
-                if (!isMelee)
-                {
-                    StartCoroutine(shoot());
-                }
-                else
-                {
-                    StartCoroutine(meleeAttack());
-                }
-            }
+            // Checking if the player is in range
+            if (!isRoaming && enemyAgent.remainingDistance < 0.05f)
+                StartCoroutine(roam());
+        }
+        else if (!playerInRange)
+        {
+            // Checking if the player is not in range
+            if (!isRoaming && enemyAgent.remainingDistance < 0.05f)
+                StartCoroutine(roam());
         }
 
         // Check if it's time to teleport
-        if(Time.time >= nextTeleport)
+        if (Time.time >= nextTeleport)
         {
             nextTeleport = Time.time + teleportCooldown;
         }
+    }
+
+    IEnumerator roam()
+    {
+
+        isRoaming = true;
+        yield return new WaitForSeconds(roamTimer);
+        enemyAgent.stoppingDistance = 0;
+        Vector3 ranPos = Random.insideUnitSphere * roamDist;
+        ranPos += startPos;
+
+        NavMeshHit hit;
+        NavMesh.SamplePosition(ranPos, out hit, roamDist, 1);
+        enemyAgent.SetDestination(hit.position);
+
+        isRoaming = false;
     }
 
     // Check if the enemy can see the player
@@ -132,6 +167,9 @@ public class EnemyAI : MonoBehaviour, IDamage
     {
         playerDir = gameManager.instance.player.transform.position - headPos.position;
         angToPlayer = Vector3.Angle(playerDir, transform.forward);
+
+        Debug.Log(angToPlayer);
+        Debug.DrawRay(headPos.position, playerDir);
 
         RaycastHit hit;
         if (Physics.Raycast(headPos.position, playerDir, out hit))
@@ -143,7 +181,7 @@ public class EnemyAI : MonoBehaviour, IDamage
                 if (enemyAgent.remainingDistance <= enemyAgent.stoppingDistance)
                     faceTarget();
 
-                if (!isAttacking)
+                if (!isShooting)
                     StartCoroutine(shoot());
                 enemyAgent.stoppingDistance = stoppingDistOrigin;
                 return true;
@@ -156,16 +194,17 @@ public class EnemyAI : MonoBehaviour, IDamage
     // Take damage method
     public void takeDamage(int amount)
     {
-        // Reduces HP by the damage amount
+        // Subtracts from HP
+        Debug.Log("Enemy took damage: " + amount);
         HP -= amount;
-
-        // Sets enemy location if being shot from out of sight
+        
+        // Setting destination for roaming
         enemyAgent.SetDestination(gameManager.instance.player.transform.position);
 
-        // does the flash damage
+        // Flashing damage
         StartCoroutine(flashDamage());
         
-        // destroying the enemy
+        // Checking if the enemy has no HP
         if (HP <= 0)
         {
             gameManager.instance.updateGameGoal(-1);
@@ -177,18 +216,18 @@ public class EnemyAI : MonoBehaviour, IDamage
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
-        {
-                // Player is in range
-                playerInRange = true;
-        }
+            playerInRange = true;
     }
 
     // Trigger detection for player leaving range
     void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
+        {
             // Player is out of range
+            enemyAgent.stoppingDistance = 0;
             playerInRange = false;
+        }
     }
 
     // Enemy faces the player

@@ -36,11 +36,6 @@ public class PlayerMovement : MonoBehaviour
     // How far the player can shoot
     [SerializeField] int shootDistance;
 
-    // The amount of hp the player has
-
-    // The ammo for the weapon
-    [SerializeField] GameObject cube;
-
     [SerializeField] PickupFlash pickupFlash;
 
 
